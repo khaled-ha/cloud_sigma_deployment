@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-web-api-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: cloud-sigma-web-api
+  ports:
+  - port: 8002
+    targetPort: 8002
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-sigma-web-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloud-sigma-web-api
+  template:
+    metadata:
+      labels:
+        app: cloud-sigma-web-api
+    spec:
+      containers:
+      - name: cloud-sigma-web-api
+        image: khaledhadjali/cloud_sigma_web_api:latest
+        env:
+          - name: POSTGRES_DB
+            value: cloud_sigma
+          - name: ACCOUNT_SERVICE
+            value: k8s-account-service
+          - name: WAREHOUSE_SERVICE
+            value: k8s-warehouse-service
+          - name: SALES_SERVICE
+            value: k8s-sales-service
+          - name: NETWORK
+            value: postgres-service
+          - name: POSTGRES_HOST_DB
+            value: postgres-service
+          - name: POSTGRES_USER
+            value: cloud_sigma
+          - name: POSTGRES_PASSWORD
+            value: cloud_sigma
+          - name: DATABASE_URL
+            value: postgres
+          - name: SERVER_PORT
+            value: '8002'
+          - name: ACCESS_TOKEN_EXPIRE_MINUTES
+            value: '300000'
+          - name: REFRESH_TOKEN_EXPIRE_MINUTES
+            value: '80000'
+          - name: ALGORITHM
+            value: HS256
+          - name: JWT_SECRET_KEY
+            value: eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJEaW5vQ2hpZXNhLmdpdGh1Yi5pbyIsInN1YiI6ImFubmEiLCJhdWQiOiJuYWltaXNoIiwiaWF0IjoxNjczNzA4MTExLCJleHAiOjE2NzM3MDg3MTEsInByb3BYIjpmYWxzZX0.G6sZ8XITlz0kFNhDZ9IsTn_A07ZuqURqRntWsDxgXRIcRdXhT0PzqGkSKLhCck8u-QrUFRXYxV1z3iXVQol1Aluz91szjs4cwd2IMWVgOoIPGqHpl4Npp42GUKgTGaVFA5378rkQAX3pd6OXxPZoU3bm1M2eGWXoRtLxZ2iZ6JTQtPjnCqk4rx_6-loqsbOCuiNuCuDFGr3kHjb4-YFchaRc6UDU2ZBsbDQLhZrw9vU3L4BnWqYQHwZBWjepr6pExCgoFR1nupCsbqZwx_5q5aRVyKGC-Xe2BVoX3Gx-iK5Pu719PvzWtNVZs1xUygTlHtuWbWDVwoEZGr3q_7KGow
+          - name: JWT_REFRESH_SECRET_KEY
+            value: eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJEaW5vQ2hpZXNhLmdpdGh1Yi5pbyIsInN1YiI6ImFubmEiLCJhdWQiOiJuYWltaXNoIiwiaWF0IjoxNjczNzA4MTExLCJleHAiOjE2NzM3MDg3MTEsInByb3BYIjpmYWxzZX0.G6sZ8XITlz0kFNhDZ9IsTn_A07ZuqURqRntWsDxgXRIcRdXhT0PzqGkSKLhCck8u-QrUFRXYxV1z3iXVQol1Aluz91szjs4cwd2IMWVgOoIPGqHpl4Npp42GUKgTGaVFA5378rkQAX3pd6OXxPZoU3bm1M2eGWXoRtLxZ2iZ6JTQtPjnCqk4rx_6-loqsbOCuiNuCuDFGr3kHjb4-YFchaRc6UDU2ZBsbDQLhZrw9vU3L4BnWqYQHwZBWjepr6pExCgoFR1nupCsbqZwx_5q5aRVyKGC-Xe2BVoX3Gx-iK5Pu719PvzWtNVZs1xUygTlHtuWbWDVwoEZGr3q_7KGow
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 8002

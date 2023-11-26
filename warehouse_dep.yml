@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-warehouse-service
+spec:
+  type: ClusterIP
+  selector:
+    app: cloud-sigma-warehouse
+  ports:
+  - port: 50051
+    targetPort: 50051
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-sigma-warehouse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloud-sigma-warehouse
+  template:
+    metadata:
+      labels:
+        app: cloud-sigma-warehouse
+    spec:
+      containers:
+      - name: cloud-sigma-warehouse
+        image: khaledhadjali/cloud_sigma_warehouse
+        env:
+          - name: POSTGRES_DB
+            value: cloud_sigma
+          - name: POSTGRES_USER
+            value: cloud_sigma
+          - name: POSTGRES_PASSWORD
+            value: cloud_sigma
+          - name: DATABASE_URL
+            value: postgres-service
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 50051
